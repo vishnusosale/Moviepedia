@@ -1,6 +1,7 @@
 package com.moviepedia.moviedetail;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -19,6 +20,8 @@ import com.moviepedia.util.VolleyNetwork;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 /**
  * Presenter which handles the business logic behind showing the movie list
@@ -44,30 +47,38 @@ class MovieDetailPresenter implements MovieDetailContract.MovieDetailPresenter {
 
         movieDetailView.showProgress();
 
-        final String MOVIE_DETAIL_URI = "https://api.themoviedb" +
-                ".org/3/movie/" + String.valueOf(id) +
-                "?api_key=687c09fb8d67fee2d49eea108d71400a&language=en-US";
+        final Uri uri = new Uri.Builder()
+                .scheme(ApiConstants.getScheme())
+                .authority(ApiConstants.getAuthority())
+                .appendPath(ApiConstants.getApiVersion())
+                .appendPath(ApiConstants.getMoviePath())
+                .appendPath(String.valueOf(id))
+                .appendQueryParameter(ApiConstants.getApiKeyParameter(), ApiConstants.getApiKey())
+                .appendQueryParameter(ApiConstants.getLanguageParameter(), Locale.getDefault()
+                        .toString())
+                .build();
+        
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(uri.toString(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
 
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(MOVIE_DETAIL_URI, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
+                        // Request success, process data and update UI
+                        movieDetailView.dismissProgress();
 
-                // Request success, process data and update UI
-                movieDetailView.dismissProgress();
+                        try {
+                            movieDetailView.showMovieDetail(new MovieDetail(
+                                    response.getInt("id"),
+                                    response.getString("original_title"),
+                                    response.getString("overview"),
+                                    response.getString("poster_path")));
 
-                try {
-                    movieDetailView.showMovieDetail(new MovieDetail(
-                            response.getInt("id"),
-                            response.getString("original_title"),
-                            response.getString("overview"),
-                            response.getString("poster_path")));
-
-                } catch (JSONException e) {
-                    movieDetailView.dismissProgress();
-                    Log.d(TAG, e.toString());
-                }
-            }
-        }, new Response.ErrorListener() {
+                        } catch (JSONException e) {
+                            movieDetailView.dismissProgress();
+                            Log.d(TAG, e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 

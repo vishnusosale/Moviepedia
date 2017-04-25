@@ -41,7 +41,7 @@ public class MovieDetailFragment extends Fragment implements MovieDetailContract
 
         movieDetailPresenter = new MovieDetailPresenter(this, getContext());
         movieDetailPresenter.getMovieDetail(getArguments().getInt("id"));
-        
+
         return rootView;
     }
 
