@@ -57,7 +57,7 @@ class MovieDetailPresenter implements MovieDetailContract.MovieDetailPresenter {
                 .appendQueryParameter(ApiConstants.getLanguageParameter(), Locale.getDefault()
                         .toString())
                 .build();
-        
+
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(uri.toString(), null,
                 new Response.Listener<JSONObject>() {
                     @Override
