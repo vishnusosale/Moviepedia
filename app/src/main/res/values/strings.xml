@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Moviepedia</string>
+    <string name="most_popular">Most popular</string>
+    <string name="most_recent">Most Recent</string>
 </resources>
