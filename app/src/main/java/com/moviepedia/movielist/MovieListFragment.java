@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.moviepedia.R;
 import com.moviepedia.data.Movie;
 import com.moviepedia.moviedetail.MovieDetailActivity;
+import com.moviepedia.util.EndlessScrollListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
@@ -57,6 +58,15 @@ public class MovieListFragment extends Fragment implements MovieListContract.Mov
 
         movieListPresenter = new MovieListPresenter(this, this.getContext());
         movieListPresenter.getMovieList(1);
+
+        // Set a custom pagination on ListView scroll
+        movieListView.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                movieListPresenter.getMovieList(page);
+                return true;
+            }
+        });
 
         return rootView;
     }
